@@ -10,6 +10,7 @@
         'survey','hr_attendance','hr_contract',
     ],
     'data': [
+        #https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.min.js
         'security/groups.xml',
         'security/record_rules.xml',
         'security/ir.model.access.csv',

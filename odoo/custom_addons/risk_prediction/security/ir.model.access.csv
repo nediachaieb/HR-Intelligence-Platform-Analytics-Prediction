@@ -1,7 +1,3 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_risk_hr_employee,Access HR Employee,model_hr_employee,risk_prediction.group_rh_risk,1,1,1,1
-access_risk_emp_employee,Access Employee Record,model_hr_employee,risk_prediction.group_emp_risk,1,0,0,0
-access_risk_hr_survey_input,Access HR Survey Responses,model_survey_user_input,risk_prediction.group_rh_risk,1,1,1,1
-access_risk_emp_survey_input,Access Employee Survey Responses,model_survey_user_input,risk_prediction.group_emp_risk,1,1,0,0
-access_survey_question_category,Access Survey Question Category,model_survey_question_category,risk_prediction.group_rh_risk,1,1,1,1
-access_historique_evaluation,Access Historique Evaluation,model_historique_evaluation,risk_prediction.group_rh_risk,1,1,1,1
+version https://git-lfs.github.com/spec/v1
+oid sha256:02bfff08bcf24aed2b59e1582412d8dd56a94d4e49715279093c902dab178e72
+size 780

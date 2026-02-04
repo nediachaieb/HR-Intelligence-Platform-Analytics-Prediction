@@ -172,8 +172,7 @@
                 </page>
                 <page name="history" string="Evaluation History">
                     <field name="historic_detaill"
-                           widget="one2many_list"
-                           readonly="1">
+                           widget="one2many_list" readonly="1">
                         <tree>
                             <field name="date"/>
                             <field name="job_satis"/>
