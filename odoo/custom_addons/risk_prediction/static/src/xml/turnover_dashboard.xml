@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="risk_prediction.TurnoverDashboard">
+
+  <div class="o_turnover_dashboard">
+
+    <!-- KPI globaux -->
+      <div class="o_kpi_container" t-if="state.stats">
+
+      <div class="o_kpi">
+        <strong>Total employés</strong>
+          <span t-esc="state.stats.total"/>
+      </div>
+
+          <div class="o_kpi">
+        <strong>Total évalués</strong>
+              <span t-esc="state.stats.evaluated"/>
+      </div>
+
+          <div class="o_kpi clickable"
+               t-on-click="() => this.openRisk('high')">
+        <strong>Risque élevé</strong>
+              <span t-esc="state.stats.percent?.high || 0"/>
+              %
+      </div>
+
+          <div class="o_kpi clickable"
+               t-on-click="() => this.openRisk('medium')">
+        <strong>Risque moyen</strong>
+              <span t-esc="state.stats.percent?.medium || 0"/>
+              %
+      </div>
+
+          <div class="o_kpi clickable"
+               t-on-click="() => this.openRisk('low')">
+        <strong>Risque faible</strong>
+              <span t-esc="state.stats.percent?.low || 0"/>
+              %
+      </div>
+
+    </div>
+
+      <!-- Liste après clic -->
+      <div class="o_drilldown" t-if="state.selectedRisk">
+
+      <h4>
+        Employés —
+        <t t-if="state.selectedRisk === 'high'">Risque élevé</t>
+          <t t-if="state.selectedRisk === 'medium'">Risque moyen</t>
+          <t t-if="state.selectedRisk === 'low'">Risque faible</t>
+          <t t-if="state.selectedRisk === 'undefined'">Non évalué</t>
+      </h4>
+
+          <t t-if="state.loading">
+        <span>Chargement…</span>
+      </t>
+
+          <table t-if="!state.loading" class="table table-sm">
+        <thead>
+          <tr>
+            <th>Risque</th>
+              <th>Nom</th>
+              <th>Département</th>
+              <th>Poste</th>
+              <th>Dernière évaluation</th>
+              <th>Actions</th>
+          </tr>
+        </thead>
+
+              <tbody>
+
+          <!-- État vide -->
+                  <tr t-if="!state.loading and state.employees.length === 0">
+            <td colspan="6" class="text-center text-muted">
+              Aucun employé dans cette catégorie.
+            </td>
+          </tr>
+
+                  <!-- Lignes employés -->
+                  <tr t-foreach="state.employees" t-as="emp" t-key="emp.id">
+                      <td>
+                          <span class="text-muted">
+                            ID: <t t-esc="emp.id"/>
+                          </span>
+                      </td>
+
+                      <td t-esc="emp.name"/>
+                      <td t-esc="emp.department"/>
+                      <td t-esc="emp.job_title"/>
+                      <td t-esc="emp.last_evaluation || '-'"/>
+
+                      <td>
+                            <button class="btn btn-sm btn-primary me-1"
+                                    t-att-disabled="state.loading"
+                                    t-on-click="() => this.openEmployee(emp.id)">
+                              Profil
+                            </button>
+
+                          <button class="btn btn-sm btn-outline-secondary"
+                                  t-att-disabled="state.loading"
+                                  t-on-click="() => this.openHistory(emp.id)">
+                Historique Questionnaires
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+
+</t>
+</templates>

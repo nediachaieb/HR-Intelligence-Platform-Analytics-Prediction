@@ -1,0 +1,20 @@
+<odoo>
+    <record id="action_turnover_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard Turnover</field>
+        <field name="tag">risk_prediction_turnover_dashboard</field>
+
+    </record>
+
+
+    <record id="action_employee_profile_dashboard" model="ir.actions.client">
+        <field name="name">Profil RH</field>
+        <field name="tag">risk_prediction_employee_profile</field>
+    </record>
+
+
+    <menuitem id="menu_turnover_dashboard"
+              name="Dashboard Turnover"
+              parent="hr.menu_hr_employee_payroll"
+              action="action_turnover_dashboard"
+              groups="risk_prediction.group_rh_risk"/>
+</odoo>

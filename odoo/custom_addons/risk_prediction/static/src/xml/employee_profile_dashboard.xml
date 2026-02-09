@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="risk_prediction.EmployeeProfileDashboard">
+  <div class="container o_employee_profile_rh py-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="mb-0" t-esc="state.employee?.name || 'Profil RH'"/>
+        <small class="text-muted" t-if="state.employee?.job_title">
+          <t t-esc="state.employee.job_title"/> — <t t-esc="state.employee.department"/>
+        </small>
+      </div>
+
+      <button class="btn btn-outline-secondary"
+              t-on-click="() => this.backToDashboard()">
+        ← Retour
+      </button>
+    </div>
+
+    <t t-if="state.loading">
+      <div class="alert alert-info">Chargement…</div>
+    </t>
+
+    <t t-if="state.error">
+      <div class="alert alert-danger" t-esc="state.error"/>
+    </t>
+
+    <t t-if="!state.loading and !state.error">
+      <div class="row g-3">
+
+        <!-- Personal Information -->
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Informations personnelles</h5>
+
+              <div class="row">
+                <div class="col-6 text-muted">Genre</div>
+                <div class="col-6" t-esc="state.employee.gender || '-'"/>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-6 text-muted">Date de naissance</div>
+                <div class="col-6" t-esc="state.employee.birthday || '-'"/>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-6 text-muted">Âge</div>
+                <div class="col-6" t-esc="state.employee.age || '-'"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Position / Work Metrics -->
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Position &amp; travail</h5>
+
+              <div class="row">
+                <div class="col-6 text-muted">Niveau</div>
+                <div class="col-6" t-esc="state.employee.job_level || '-'"/>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-6 text-muted">Ancienneté</div>
+                <div class="col-6">
+                  <t t-esc="state.employee.years_at_company || 0"/> ans
+                </div>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-6 text-muted">Remote</div>
+                <div class="col-6" t-esc="state.employee.remote_work || '-'"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contract -->
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Contrat</h5>
+
+              <div class="row">
+                <div class="col-md-4 text-muted">Statut</div>
+                <div class="col-md-8" t-esc="state.employee.contract_status || '-'"/>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-md-4 text-muted">Salaire mensuel</div>
+                <div class="col-md-8" t-esc="state.employee.monthly_income || '-'"/>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-md-4 text-muted">Promotions</div>
+                <div class="col-md-8" t-esc="state.employee.number_of_promotions || 0"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </t>
+  </div>
+</t>
+
+</templates>
