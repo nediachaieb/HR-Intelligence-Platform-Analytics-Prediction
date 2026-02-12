@@ -82,17 +82,17 @@ class TurnoverDrilldownController(http.Controller):
                 "job_title": emp.job_title or "",
                 "last_evaluation": last_eval.date if last_eval else None,
                 "predicted_risk": emp.predicted_risk,
-                "risk_label": {
-                    "low": "Risque faible",
-                    "medium": "Risque moyen",
-                    "high": "Risque élevé",
-                    "undefined": "Non évalué"
-                }.get(emp.predicted_risk),
-                "status_label": (
-                    "Non évalué"
-                    if emp.predicted_risk == 'undefined'
-                    else None
-                )
+                # "risk_label": {
+                #     "low": "Risque faible",
+                #     "medium": "Risque moyen",
+                #     "high": "Risque élevé",
+                #     "undefined": "Non évalué"
+                # }.get(emp.predicted_risk),
+                # "status_label": (
+                #     "Non évalué"
+                #     if emp.predicted_risk == 'undefined'
+                #     else None
+                # )
             })
 
         total = Employee.search_count(domain)

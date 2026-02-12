@@ -20,21 +20,21 @@
 
           <div class="o_kpi clickable"
                t-on-click="() => this.openRisk('high')">
-        <strong>Risque élevé</strong>
+        <strong>Risque élevé = </strong>
               <span t-esc="state.stats.percent?.high || 0"/>
               %
       </div>
 
           <div class="o_kpi clickable"
                t-on-click="() => this.openRisk('medium')">
-        <strong>Risque moyen</strong>
+        <strong>Risque moyen = </strong>
               <span t-esc="state.stats.percent?.medium || 0"/>
               %
       </div>
 
           <div class="o_kpi clickable"
                t-on-click="() => this.openRisk('low')">
-        <strong>Risque faible</strong>
+        <strong>Risque faible = </strong>
               <span t-esc="state.stats.percent?.low || 0"/>
               %
       </div>
@@ -59,7 +59,7 @@
           <table t-if="!state.loading" class="table table-sm">
         <thead>
           <tr>
-            <th>Risque</th>
+            <th>ID</th>
               <th>Nom</th>
               <th>Département</th>
               <th>Poste</th>

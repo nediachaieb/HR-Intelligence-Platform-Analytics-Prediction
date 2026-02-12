@@ -14,9 +14,8 @@ export class EmployeeProfileDashboard extends Component {
             employee: null,
             error: null,
         });
-
+// Chargement du profil de l'employé
         onWillStart(async () => {
-
             console.log("PROPS ACTION =", this.props.action);
 
             const employeeId = this.props.action?.context?.employee_id;
@@ -32,7 +31,7 @@ export class EmployeeProfileDashboard extends Component {
                     employee_id: employeeId,
                 });
 
-                this.state.employee = res.result || res;
+                this.state.employee = res;
 
             } catch (e) {
                 this.state.error = "Erreur lors du chargement du profil.";

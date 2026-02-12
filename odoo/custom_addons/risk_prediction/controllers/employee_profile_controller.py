@@ -8,16 +8,9 @@ class EmployeeProfileController(http.Controller):
     def employee_profile(self, employee_id=None):
         user = request.env.user
 
-        # 🔒 Sécurité RH
+        # Sécurité RH
         if not user.has_group("risk_prediction.group_rh_risk"):
             raise AccessError("Access denied")
-
-        # ✅ Validation de l’ID
-        try:
-            employee_id = int(employee_id)
-        except (TypeError, ValueError):
-            return {"error": "Employee ID invalide"}
-
         emp = request.env["hr.employee"].sudo().browse(employee_id)
         if not emp.exists():
             return {"error": "Employee not found"}

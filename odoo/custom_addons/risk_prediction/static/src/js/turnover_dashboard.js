@@ -19,13 +19,14 @@ export class TurnoverDashboard extends Component {
 
         // Chargement les donnes initial
         onWillStart(async () => {
-            //this.state.stats = await this.rpc("/hr/turnover/stats", {});
-            const res = await this.rpc("/hr/turnover/stats", {});
-            this.state.stats = res.result || res;
+            this.state.stats = await this.rpc("/hr/turnover/stats", {});
+            // const res = await this.rpc("/hr/turnover/stats", {});
+            // this.state.stats = res;
         });
+
     }
 
-    // Clic sur une zone de risque
+    // Clic sur une zone de risque => afficher les employés correspondants
     async openRisk(risk) {
         this.state.loading = true;
         this.state.selectedRisk = risk;
@@ -39,21 +40,9 @@ export class TurnoverDashboard extends Component {
         this.state.loading = false;
     }
 
-    // Voir profil employé
-    // openEmployee(employeeId) {
-    //     this.action.doAction({
-    //         type: "ir.actions.act_window",
-    //         res_model: "hr.employee",
-    //         res_id: employeeId,
-    //         views: [[false, "form"]],
-    //         target: "current",
-    //     });
-    // }
+    // Voir le profil d'un employé
     openEmployee(employeeId) {
         console.log("OPEN PROFILE FOR ID =", employeeId);
-        console.log("ACTION =", this.env.action);
-        console.log("CONTEXT =", this.env.action?.context);
-
         this.action.doAction({
             type: "ir.actions.client",
             tag: "risk_prediction_employee_profile",
@@ -69,7 +58,8 @@ export class TurnoverDashboard extends Component {
             type: "ir.actions.act_window",
             name: "Historique IA",
             res_model: "historique.evaluation",
-            views: [[false, "tree"], [false, "form"]],
+            // views: [[false, "tree"], [false, "form"]],
+            views: [ [false, "form"]],
             domain: [["employee_id", "=", employeeId]],
             target: "current",
         });
