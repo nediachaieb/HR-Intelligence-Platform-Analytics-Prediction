@@ -1,48 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-
 <t t-name="risk_prediction.TurnoverDashboard">
 
-  <div class="o_turnover_dashboard">
+<div class="o_turnover_dashboard container-fluid py-3">
 
-    <!-- KPI globaux -->
-      <div class="o_kpi_container" t-if="state.stats">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Dashboard Turnover RH</h2>
+        <small class="text-muted">
+            Analyse prédictive des risques de départ
+        </small>
+    </div>
 
-      <div class="o_kpi">
-        <strong>Total employés</strong>
-          <span t-esc="state.stats.total"/>
-      </div>
+    <div class="row">
 
-          <div class="o_kpi">
-        <strong>Total évalués</strong>
-              <span t-esc="state.stats.evaluated"/>
-      </div>
+        <!-- Donut Chart -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <canvas id="turnoverChart"
+                            style="max-height:400px; cursor:pointer;"></canvas>
+                </div>
+            </div>
+        </div>
 
-          <div class="o_kpi clickable"
-               t-on-click="() => this.openRisk('high')">
-        <strong>Risque élevé = </strong>
-              <span t-esc="state.stats.percent?.high || 0"/>
-              %
-      </div>
+        <!-- KPI Cards -->
+        <div class="col-lg-5">
 
-          <div class="o_kpi clickable"
-               t-on-click="() => this.openRisk('medium')">
-        <strong>Risque moyen = </strong>
-              <span t-esc="state.stats.percent?.medium || 0"/>
-              %
-      </div>
+            <div class="row g-3">
 
-          <div class="o_kpi clickable"
-               t-on-click="() => this.openRisk('low')">
-        <strong>Risque faible = </strong>
-              <span t-esc="state.stats.percent?.low || 0"/>
-              %
-      </div>
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm bg-light">
+                        <div class="card-body">
+                            <h6 class="text-muted">Total employés</h6>
+                            <h3 class="fw-bold">
+                                <t t-esc="state.stats?.total || 0"/>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm bg-light">
+                        <div class="card-body">
+                            <h6 class="text-muted">Évalués</h6>
+                            <h3 class="fw-bold">
+                                <t t-esc="state.stats?.evaluated || 0"/>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-danger">Élevé</span>
+                                <strong>
+                                    <t t-esc="state.stats?.percent?.high || 0"/>
+                                    %
+                                </strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-warning text-dark">Moyen</span>
+                                <strong>
+                                    <t t-esc="state.stats?.percent?.medium || 0"/>
+                                    %
+                                </strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-success">Faible</span>
+                                <strong>
+                                    <t t-esc="state.stats?.percent?.low || 0"/>
+                                    %
+                                </strong>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-      <!-- Liste après clic -->
-      <div class="o_drilldown" t-if="state.selectedRisk">
+</div>
+    <!-- Liste après clic -->
+    <div class="o_drilldown" t-if="state.selectedRisk">
 
       <h4>
         Employés —
@@ -52,11 +101,11 @@
           <t t-if="state.selectedRisk === 'undefined'">Non évalué</t>
       </h4>
 
-          <t t-if="state.loading">
+        <t t-if="state.loading">
         <span>Chargement…</span>
       </t>
 
-          <table t-if="!state.loading" class="table table-sm">
+        <table t-if="!state.loading" class="table table-sm">
         <thead>
           <tr>
             <th>ID</th>
@@ -68,38 +117,38 @@
           </tr>
         </thead>
 
-              <tbody>
+            <tbody>
 
           <!-- État vide -->
-                  <tr t-if="!state.loading and state.employees.length === 0">
+                <tr t-if="!state.loading and state.employees.length === 0">
             <td colspan="6" class="text-center text-muted">
               Aucun employé dans cette catégorie.
             </td>
           </tr>
 
-                  <!-- Lignes employés -->
-                  <tr t-foreach="state.employees" t-as="emp" t-key="emp.id">
+                <!-- Lignes employés -->
+                <tr t-foreach="state.employees" t-as="emp" t-key="emp.id">
                       <td>
                           <span class="text-muted">
                             ID: <t t-esc="emp.id"/>
                           </span>
                       </td>
 
-                      <td t-esc="emp.name"/>
-                      <td t-esc="emp.department"/>
-                      <td t-esc="emp.job_title"/>
-                      <td t-esc="emp.last_evaluation || '-'"/>
+                    <td t-esc="emp.name"/>
+                    <td t-esc="emp.department"/>
+                    <td t-esc="emp.job_title"/>
+                    <td t-esc="emp.last_evaluation || '-'"/>
 
-                      <td>
+                    <td>
                             <button class="btn btn-sm btn-primary me-1"
                                     t-att-disabled="state.loading"
                                     t-on-click="() => this.openEmployee(emp.id)">
                               Profil
                             </button>
 
-                          <button class="btn btn-sm btn-outline-secondary"
-                                  t-att-disabled="state.loading"
-                                  t-on-click="() => this.openHistory(emp.id)">
+                        <button class="btn btn-sm btn-outline-secondary"
+                                t-att-disabled="state.loading"
+                                t-on-click="() => this.openHistory(emp.id)">
                 Historique Questionnaires
               </button>
             </td>
@@ -109,8 +158,6 @@
       </table>
 
     </div>
-
-  </div>
 
 </t>
 </templates>

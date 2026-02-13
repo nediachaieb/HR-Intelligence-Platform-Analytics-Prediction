@@ -1,6 +1,6 @@
 /** @odoo-module **/
 import {registry} from "@web/core/registry";
-import {Component, onWillStart, useState} from "@odoo/owl";
+import {Component, onMounted, onWillStart, useRef, useState} from "@odoo/owl";
 import {useService} from "@web/core/utils/hooks";
 
 export class TurnoverDashboard extends Component {
@@ -8,6 +8,8 @@ export class TurnoverDashboard extends Component {
     setup() {
         this.rpc = useService("rpc");
         this.action = useService("action");
+        this.chartRef = useRef("riskChart");
+        this.chart = null;
 
 
         this.state = useState({
@@ -24,7 +26,76 @@ export class TurnoverDashboard extends Component {
             // this.state.stats = res;
         });
 
+        onMounted(() => {
+            if (this.state.stats) {
+                this.renderChart();
+            }
+        });
+
     }
+
+    renderChart() {
+
+        const ctx = document.getElementById("turnoverChart");
+
+        if (!ctx || !this.state.stats) return;
+
+        if (this.chartInstance) {
+            this.chartInstance.destroy();
+        }
+
+        this.chartInstance = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: ["Risque faible", "Risque moyen", "Risque élevé"],
+                datasets: [{
+                    data: [
+                        this.state.stats.percent.low,
+                        this.state.stats.percent.medium,
+                        this.state.stats.percent.high
+                    ],
+                    backgroundColor: [
+                        "#28a745",
+                        "#ffc107",
+                        "#dc3545"
+                    ],
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "65%",
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            padding: 20,
+                            font: {size: 14}
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true
+                },
+
+                onClick: (event, elements) => {
+
+                if (!elements.length) return;
+
+                const index = elements[0].index;
+
+                const riskMap = ["low", "medium", "high"];
+                const selectedRisk = riskMap[index];
+
+                this.openRisk(selectedRisk);
+
+            }
+
+            }
+        });
+    }
+
 
     // Clic sur une zone de risque => afficher les employés correspondants
     async openRisk(risk) {
@@ -58,8 +129,7 @@ export class TurnoverDashboard extends Component {
             type: "ir.actions.act_window",
             name: "Historique IA",
             res_model: "historique.evaluation",
-            // views: [[false, "tree"], [false, "form"]],
-            views: [ [false, "form"]],
+            views: [[false, "tree"], [false, "form"]],
             domain: [["employee_id", "=", employeeId]],
             target: "current",
         });
