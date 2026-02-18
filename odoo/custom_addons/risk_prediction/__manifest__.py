@@ -29,7 +29,7 @@
             'risk_prediction/static/src/js/turnover_dashboard.js',
             'risk_prediction/static/src/xml/turnover_dashboard.xml',
             "risk_prediction/static/src/js/employee_profile_dashboard.js",
-          #  "risk_prediction/static/src/xml/employee_profile_dashboard.xml",
+            "risk_prediction/static/src/xml/employee_profile_dashboard.xml",
         ],
     },
     'installable': True,
