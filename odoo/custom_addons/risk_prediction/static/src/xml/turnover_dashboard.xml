@@ -3,139 +3,297 @@
 
 <t t-name="risk_prediction.TurnoverDashboard">
 
-<div class="o_turnover_dashboard">
 
-    <!-- HEADER -->
-    <div class="dashboard-header">
-        <h2>Analyse prédictive des risques de départ</h2>
-    </div>
+    <!-- ===================================================================== -->
+    <!-- TEMPLATE PRINCIPAL : DASHBOARD TURNOVER                               -->
+    <!-- ===================================================================== -->
+<!--    <template id="TurnoverDashboard" name="Turnover Dashboard">-->
+<!--        <t t-name="risk_prediction.TurnoverDashboard">-->
 
-    <hr/>
+            <div class="o TurnoverDashboard container-fluid p-4">
 
-    <!-- KPI -->
-    <div class="row g-3 mb-4" t-if="state.stats">
-        <div class="col-md-3 col-sm-6">
-            <div class="kpi-card">
-                <div class="kpi-label">Total employés</div>
-                <div class="kpi-number" t-esc="state.stats.total"/>
+                <!-- Titre + loader global -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">Tableau de bord Turnover &amp; Risque de départ</h2>
+                    <t t-if="state.loading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </t>
+                </div>
+                <div class="row mb-4 g-3">
+
+                <!-- Total employés -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="card shadow-sm text-center border-primary h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted mb-1">Total employés</h6>
+                            <h3 class="card-text fw-bold text-primary">
+                                <t t-esc="state.stats?.total || 0" />
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total évalués -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="card shadow-sm text-center border-success h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted mb-1">Total évalués</h6>
+                            <h3 class="card-text fw-bold text-success">
+                                <t t-esc="state.stats?.evaluated || 0" />
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Non évalués (undefined) -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <div class="card shadow-sm text-center border-warning h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted mb-1">Non évalués</h6>
+                            <h3 class="card-text fw-bold text-warning">
+                                <t t-esc="state.stats?.undefined || 0" />
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Ligne 1 : Donut global + statistiques clés -->
+                <div class="row mb-4">
+                    <div class="col-lg-5 col-xl-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Répartition des risques</h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="chart-container" style="position: relative; height: 280px;">
+                                    <canvas t-ref="donutChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7 col-xl-8">
+                        <div class="row h-100 g-3">
+                            <div class="col-12">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Risque par département</h5>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="chart-container" style="position: relative; height: 260px;">
+                                            <canvas t-ref="barChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ligne 2 : Évolution temporelle -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Évolution mensuelle des évaluations (12 derniers mois)</h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="chart-container" style="position: relative; height: 320px;">
+                                    <canvas t-ref="lineChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal employés par niveau de risque -->
+                <t t-if="state.showModal">
+                    <div class="modal fade show" tabindex="-1" style="display: block;">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Employés — Risque
+                                        <t t-esc="state.selectedRisk === 'high' ? 'Élevé' : state.selectedRisk === 'medium' ? 'Moyen' : 'Faible'"/>
+                                    </h5>
+                                    <button type="button" class="btn-close" t-on-click="closeModal"></button>
+                                </div>
+                                <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-sm mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Nom</th>
+                                                    <th>Département</th>
+                                                    <th>Poste</th>
+                                                    <th>Dernière éval.</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="state.employees" t-as="emp" t-key="emp.id">
+                                                    <tr>
+                                                        <td t-esc="emp.name"/>
+                                                        <td t-esc="emp.department"/>
+                                                        <td t-esc="emp.job_title"/>
+                                                        <td>
+                                                            <t t-esc="emp.last_evaluation or '—'"/>
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-primary me-2"
+                                                                    t-on-click="() => this.openEmployee(emp.id)">
+                                                                Profil
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-secondary"
+                                                                    t-on-click="() => this.openHistory(emp.id)">
+                                                                Historique IA
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                                <t t-if="!state.employees.length and !state.loading">
+                                                    <tr>
+                                                        <td colspan="5" class="text-center py-4 text-muted">
+                                                            Aucun employé trouvé dans cette catégorie
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" t-on-click="closeModal">Fermer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-backdrop fade show"></div>
+                </t>
             </div>
-        </div>
+        </t>
 
-        <div class="col-md-3 col-sm-6">
-            <div class="kpi-card">
-                <div class="kpi-label">Total évalués</div>
-                <div class="kpi-number" t-esc="state.stats.evaluated"/>
-            </div>
-        </div>
-    </div>
 
-    <hr/>
+    <!-- ===================================================================== -->
+    <!-- TEMPLATE PROFIL EMPLOYÉ                                               -->
+    <!-- ===================================================================== -->
+        <t t-name="risk_prediction.EmployeeProfileDashboard">
 
-    <!-- GRAPHIQUES -->
-<div class="row g-4">
-
-    <!-- Donut -->
-    <div class="col-12 col-md-6 col-xl-4">
-        <div class="chart-card h-100">
-            <h5>Répartition des risques</h5>
-            <div class="chart-container">
-                <canvas t-ref="donutChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Line -->
-    <div class="col-12 col-md-6 col-xl-4">
-        <div class="chart-card h-100">
-            <h5>Évolution du risque</h5>
-            <div class="chart-container line-chart">
-                <canvas t-ref="lineChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bar -->
-    <div class="col-12 col-md-6 col-xl-4">
-        <div class="chart-card h-100">
-            <h5>Répartition par département</h5>
-            <div class="chart-container">
-                <canvas t-ref="barChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-    <!-- MODAL -->
-    <div t-if="state.showModal" class="o_custom_modal">
-        <div class="modal-overlay" t-on-click="closeModal"/>
-        <div class="modal-box">
-
-            <div class="modal-header">
-                <h5>
-                    Employés — <t t-esc="state.selectedRisk?.toUpperCase()"/>
-                </h5>
-                <button class="btn-close" t-on-click="closeModal"/>
-            </div>
-
-            <div class="modal-body">
+            <div class="o_employee_profile container-fluid p-4">
 
                 <t t-if="state.loading">
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary"/>
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement du profil...</span>
+                        </div>
                     </div>
                 </t>
 
-                <table t-if="!state.loading"
-                       class="table table-hover">
+                <t t-elif="state.error">
+                    <div class="alert alert-danger">
+                        <t t-esc="state.error"/>
+                    </div>
+                </t>
 
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Département</th>
-                            <th>Poste</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
+                <t t-else="">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0">
+                            <t t-esc="state.employee.name"/>
+                            <small class="text-muted ms-3" t-esc="state.employee.job_title"/>
+                        </h2>
+                        <button class="btn btn-outline-secondary" t-on-click="backToDashboard">
+                            ← Retour au dashboard
+                        </button>
+                    </div>
 
-                    <tbody>
-                        <tr t-foreach="state.employees"
-                            t-as="emp"
-                            t-key="emp.id">
+                    <div class="row g-4">
 
-                            <td t-esc="emp.name"/>
-                            <td t-esc="emp.department"/>
-                            <td t-esc="emp.job_title"/>
+                        <!-- Colonne gauche : infos principales -->
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Informations personnelles</h5>
+                                </div>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Département</span>
+                                        <strong t-esc="state.employee.department or '—'"/>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Genre</span>
+                                        <strong t-esc="state.employee.gender == 'male' ? 'Homme' : state.employee.gender == 'female' ? 'Femme' : '—'"/>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Date de naissance</span>
+                                        <strong t-esc="state.employee.birthday or '—'"/>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Âge</span>
+                                        <strong t-esc="state.employee.age"/> ans
+                                    </div>
+                                </div>
+                            </div>
 
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-primary"
-                                        t-on-click="() => this.openEmployee(emp.id)">
-                                    Profil
-                                </button>
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Situation contractuelle</h5>
+                                </div>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Statut</span>
+                                        <strong t-esc="state.employee.contract_status or '—'"/>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Salaire mensuel</span>
+                                        <strong t-esc="state.employee.monthly_income" />
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Télétravail</span>
+                                        <strong t-esc="state.employee.remote_work"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                <button class="btn btn-sm btn-outline-secondary"
-                                  t-att-disabled="state.loading"
-                                  t-on-click="() => this.openHistory(emp.id)">
-                Historique Questionnaires
-              </button>
+                        <!-- Colonne droite : carrière -->
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Parcours professionnel</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 bg-light">
+                                                <h6 class="mb-1">Niveau de poste</h6>
+                                                <p class="fs-5 mb-0" t-esc="state.employee.job_level or '—'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 bg-light">
+                                                <h6 class="mb-1">Ancienneté entreprise</h6>
+                                                <p class="fs-5 mb-0">
+                                                    <t t-esc="state.employee.years_at_company"/> années
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 bg-light">
+                                                <h6 class="mb-1">Nombre de promotions</h6>
+                                                <p class="fs-5 mb-0" t-esc="state.employee.number_of_promotions"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                            </td>
-
-
-                        </tr>
-                    </tbody>
-                </table>
-                <button class="btn btn-sm btn-secondary ms-2"
-                                                        t-on-click="() => this.closeModal()">
-                                                    Fermer
-                                                </button>
-
+                    </div>
+                </t>
             </div>
 
-        </div>
-
-    </div>
-
-</div>
-</t>
+        </t>
 </templates>

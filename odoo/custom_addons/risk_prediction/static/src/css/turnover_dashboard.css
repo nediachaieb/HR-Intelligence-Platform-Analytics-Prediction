@@ -1,122 +1,27 @@
-/* ================= CONTAINER ================= */
 .o_turnover_dashboard {
-    padding: 24px;
-    background: #f5f7fa;
-    min-height: 100%;
-}
-
-/* FORCE SCROLL SAFE */
-.o_content {
-    overflow-y: auto !important;
-}
-
-/* ================= HEADER ================= */
-.dashboard-header h2 {
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.dashboard-header p {
-    color: #6c757d;
-    margin-bottom: 0;
-}
-
-/* ================= KPI ================= */
-.kpi-card {
-    background: white;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-    transition: 0.2s ease;
-}
-
-.kpi-card:hover {
-    transform: translateY(-3px);
-}
-
-.kpi-label {
-    font-size: 13px;
-    color: #6c757d;
-}
-
-.kpi-number {
-    font-size: 28px;
-    font-weight: 700;
-}
-
-/* ================= CHART ================= */
-.chart-card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.chart-card h5 {
-    margin-bottom: 16px;
-    font-weight: 600;
-}
-
-/* ================= MODAL CUSTOM ================= */
-.o_custom_modal {
-    position: fixed;
-    inset: 0;
-    z-index: 1050;
-}
-
-.modal-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-}
-
-.modal-box {
-    position: relative;
-    background: white;
-    width: 900px;
-    max-width: 95%;
-    margin: 80px auto;
-    border-radius: 18px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    animation: slideUp 0.25s ease;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-/* ================= RESPONSIVE ================= */
-
-    .kpi-number {
-        font-size: 22px;
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
     }
 
+    .backdrop-blur {
+        backdrop-filter: blur(4px);
+        background: rgba(0, 0, 0, 0.1);
+    }
 
-
-.chart-container {
-    position: relative;
-    height: 340px;               /* ou au moins 320px – ajuste selon ton design */
-    width: 100%;
-    min-height: 300px;           /* sécurité supplémentaire */
+    .card-title {
+        font-weight: 600;
+    }
+}
+/* Reset ultra-simple pour débloquer le scroll global */
+.o_web_client,
+.o_main_components_container {
+    overflow-y: auto !important;
+    height: auto !important;
 }
 
-.line-chart {
-    height: 340px !important;    /* le line chart est souvent le plus problématique */
-}
-.chart-card h5 {
-    margin-bottom: 20px;
-    font-weight: 600;
+/* Option : si tu veux bloquer le fond quand modal ouverte (comme Bootstrap normal) */
+body:has(.modal.show) {
+    overflow: hidden;
 }

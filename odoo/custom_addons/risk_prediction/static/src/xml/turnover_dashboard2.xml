@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="risk_prediction.TurnoverDashboard">
+
+<div class="o_turnover_dashboard">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h2>Analyse prédictive des risques de départ</h2>
+    </div>
+
+    <hr/>
+
+    <!-- KPI -->
+    <div class="row g-3 mb-4" t-if="state.stats">
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card">
+                <div class="kpi-label">Total employés</div>
+                <div class="kpi-number" t-esc="state.stats.total"/>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card">
+                <div class="kpi-label">Total évalués</div>
+                <div class="kpi-number" t-esc="state.stats.evaluated"/>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+
+    <!-- GRAPHIQUES -->
+    <div class="row g-4">
+
+    <!-- Donut -->
+        <div class="col-12 col-md-6 col-xl-4">
+        <div class="chart-card h-100">
+            <h5>Répartition des risques</h5>
+            <div class="chart-container">
+                <canvas t-ref="donutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+        <!-- Line -->
+        <div class="col-12 col-md-6 col-xl-4">
+        <div class="chart-card h-100">
+            <h5>Évolution du risque</h5>
+            <div class="chart-container line-chart">
+                <canvas t-ref="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+        <!-- Bar -->
+        <div class="col-12 col-md-6 col-xl-4">
+        <div class="chart-card h-100">
+            <h5>Répartition par département</h5>
+            <div class="chart-container">
+                <canvas t-ref="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <!-- MODAL -->
+    <div t-if="state.showModal" class="o_custom_modal">
+        <div class="modal-overlay" t-on-click="closeModal"/>
+        <div class="modal-box">
+
+            <div class="modal-header">
+                <h5>
+                    Employés — <t t-esc="state.selectedRisk?.toUpperCase()"/>
+                </h5>
+                <button class="btn-close" t-on-click="closeModal"/>
+            </div>
+
+            <div class="modal-body">
+
+                <t t-if="state.loading">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary"/>
+                    </div>
+                </t>
+
+                <table t-if="!state.loading"
+                       class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Département</th>
+                            <th>Poste</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr t-foreach="state.employees"
+                            t-as="emp"
+                            t-key="emp.id">
+
+                            <td t-esc="emp.name"/>
+                            <td t-esc="emp.department"/>
+                            <td t-esc="emp.job_title"/>
+
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-primary"
+                                        t-on-click="() => this.openEmployee(emp.id)">
+                                    Profil
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-secondary"
+                                        t-att-disabled="state.loading"
+                                        t-on-click="() => this.openHistory(emp.id)">
+                Historique Questionnaires
+              </button>
+
+                            </td>
+
+
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-sm btn-secondary ms-2"
+                        t-on-click="() => this.closeModal()">
+                                                    Fermer
+                                                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</t>
+</templates>
