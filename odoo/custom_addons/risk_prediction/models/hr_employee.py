@@ -32,7 +32,7 @@ class HrEmployee(models.Model):
                 rec.progress_bar = 0
 
     progress_html = fields.Html(
-        compute="_compute_progress_html", sanitize=False, string="Risk Progress", readonly=True
+        compute="_compute_progress_html", sanitize=False, string="Progression du risque", readonly=True
     )
 
     @api.depends('predicted_risk', 'progress_bar')
@@ -57,76 +57,76 @@ class HrEmployee(models.Model):
     # ------------------------------------------------------------------
     #
     age = fields.Integer(string="Age", compute='_compute_age', store=True)
-    years_at_company = fields.Integer(string="Years at Company", compute='_compute_years_at_company')
-    company_size = fields.Integer(string="Company Size", compute='_compute_company_size')
-    work_hours_week = fields.Float(string="Work Hours per Week", compute='_compute_work_hours_week')
+    years_at_company = fields.Integer(string="Ancienneté", compute='_compute_years_at_company')
+    company_size = fields.Integer(string="Taille de l'entreprise", compute='_compute_company_size')
+    work_hours_week = fields.Float(string="Heures de travail par semaine", compute='_compute_work_hours_week')
     overTime = fields.Selection(
-        [('yes', 'Yes'), ('no', 'No')],
-        string="OverTime", compute='_compute_work_hours_week'
+        [('yes', 'Oui'), ('no', 'Non')],
+        string="Heures supplémentaires", compute='_compute_work_hours_week'
     )
     job_level = fields.Selection(
-        [('entry', 'Entry'), ('mid', 'Mid'), ('senior', 'Senior')],
-        string="Job Level", compute='_compute_job_level'
+        [('entry', 'Débutant'), ('mid', 'Intermédiaire'), ('senior', 'Senior')],
+        string="Niveau de poste", compute='_compute_job_level'
     )
     remote_work = fields.Selection(
-        [('yes', 'Yes'), ('no', 'No')],
-        string="Remote Work", compute='_compute_remote_work'
+        [('yes', 'Oui'), ('no', 'Non')],
+        string="Remote", compute='_compute_remote_work'
     )
     contract_status = fields.Selection(
-        [('new', 'New'), ('running', 'Running'), ('expired', 'Expired')],
-        string="Contract Status", compute='_compute_contract_status', store=True
+        [('new', 'Nouveau'), ('running', 'En cours'), ('expired', 'Expiré')],
+        string="Statut du contrat", compute='_compute_contract_status', store=True
     )
-    number_of_promotions = fields.Integer(string="Number of Promotions", compute='_compute_number_of_promotions')
-    monthly_income = fields.Float(string="Monthly Income", compute='_compute_monthly_income', store=True)
+    number_of_promotions = fields.Integer(string="Promotions", compute='_compute_number_of_promotions')
+    monthly_income = fields.Float(string="Salaire mensuel", compute='_compute_monthly_income', store=True)
 
     # ------------------------------------------------------------------
     # Champs d’évaluation RH (mis à jour par le sondage)
     job_satisfaction = fields.Selection(
         [
-            ('low', 'Low'),
-            ('medium', 'Medium'),
-            ('high', 'High'),
-            ('very_high', 'Very High'),
+            ('low', 'Faible'),
+            ('medium', 'Moyen'),
+            ('high', 'Élevé'),
+            ('very_high', 'Très Élevé'),
         ],
-        string="Job Satisfaction",
+        string="Satisfaction au travail",
         store=True,
     )
     work_life_balance = fields.Selection(
         [
-            ('poor', 'Poor'), ('fair', 'Fair'), ('good', 'Good'), ('excellent', 'Excellent')
+            ('poor', 'Mauvais'), ('fair', 'Passable'), ('good', 'Bon'), ('excellent', 'Excellent')
         ],
-        string="Work-Life Balance"
+        string="Équilibre vie pro / perso"
     )
     performance_rating = fields.Selection(
-        [('low', 'Low'), ('below_average', 'Below Average'),
-         ('average', 'Average'), ('high', 'High')],
-        string="Performance Rating", default="average"
+        [('low', 'Faible'), ('below_average', 'Sous la Moyenne'),
+         ('average', 'Moyenne'), ('high', 'Élevé')],
+        string="Évaluation de performance", default="average"
     )
     leadership_opportunities = fields.Selection(
-        [('yes', 'Yes'), ('no', 'No')],
-        string="Leadership Opportunities"
+        [('yes', 'Oui'), ('no', 'Non')],
+        string="Opportunités de leadership"
     )
     innovation_opportunities = fields.Selection(
-        [('yes', 'Yes'), ('no', 'No')],
-        string="Innovation Opportunities"
+        [('yes', 'Oui'), ('no', 'Non')],
+        string="Opportunités d'innovation"
     )
     company_reputation = fields.Selection(
-        [('poor', 'Poor'), ('fair', 'Fair'), ('good', 'Good'), ('excellent', 'Excellent')],
-        string="Company Reputation"
+        [('poor', 'Mauvaise'), ('fair', 'Correcte'), ('good', 'Bonne'), ('excellent', 'Excellente')],
+        string="Réputation de l'entreprise"
     )
     employee_recognition = fields.Selection(
-        [('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('very_high', 'Very High')],
-        string="Employee Recognition"
+        [('low', 'Faible'), ('medium', 'Moyen'), ('high', 'Élevé'), ('very_high', 'Très Élevé')],
+        string="Reconnaissance employé"
     )
 
     #  Risque prédit via FastAPI
     predicted_risk = fields.Selection(
-        [('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('undefined', 'Undefined')],
-        string="Predicted Risk", readonly=True
+        [('low', 'Faible'), ('medium', 'Moyen'), ('high', 'Élevé'), ('undefined', 'Non défini')],
+        string="Risque prédit", readonly=True
     )
     prediction_reason = fields.Char(string="Raison de non-prédiction", readonly=True)
 
-    historic_detaill = fields.One2many('historique.evaluation', 'employee_id', string='Historic', invisible="1")
+    historic_detaill = fields.One2many('historique.evaluation', 'employee_id', string='Historique', invisible="1")
 
     # ==================================================================
     @api.depends('birthday')
@@ -376,7 +376,7 @@ class HrEmployee(models.Model):
         }.get(cert.lower(), "High School") if cert else "High School"
 
     def _get_company_size_label(self, size):
-        return "Small" if size <= 50 else "Medium" if size <= 250 else "Large"
+        return "Small" if size <= 50 else "Moyen" if size <= 250 else "Large"
 
     def _label(self, value):
         """

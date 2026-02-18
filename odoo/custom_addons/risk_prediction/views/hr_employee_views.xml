@@ -23,7 +23,7 @@
         <xpath expr="//tree/header" position="inside">
             <button name="predict_risk_for_employees"
                     type="object"
-                    string="Predict Risk"
+                    string="Predire le risque de départ"
                     class="btn-primary"
                     icon="fa-bolt"/>
         </xpath>
@@ -108,12 +108,12 @@
                 <!-- ONGLET 1 : Profile -->
                 <page name="profile" string="Profile">
                     <group>
-                        <group string="Personal Information">
+                        <group string="Informations Personnelles">
                             <field name="gender"/>
                             <field name="birthday"/>
                             <field name="age"/>
                         </group>
-                        <group string="Family &amp; Education">
+                        <group string="Famille et Logement">
                             <field name="marital"/>
                             <field name="children"/>
                             <field name="certificate"/>
@@ -125,7 +125,7 @@
                             <field name="job_level" readonly="1"/>
                             <field name="years_at_company" readonly="1"/>
                         </group>
-                        <group string="Work Metrics">
+                        <group string="Conditions de travail">
                             <field name="work_hours_week" readonly="1"/>
                             <field name="overTime" readonly="1"/>
                             <field name="remote_work" readonly="1"/>
@@ -133,7 +133,7 @@
 
                             <field name="company_size" readonly="1"/>
                         </group>
-                        <group string="Contract">
+                        <group string="Contrat">
                             <field name="contract_status" widget="statusbar" statusbar_visible="new,running,expired"/>
                             <field name="monthly_income" readonly="1"/>
                             <field name="number_of_promotions" readonly="1"/>
@@ -144,7 +144,7 @@
                 <!-- ONGLET 3 : Evaluation -->
                 <page name="evaluation" string="Evaluation">
                     <group>
-                        <group string="Result">
+                        <group string="Resultat">
 
                             <field name="predicted_risk" readonly="1"
                                    decoration-danger="predicted_risk == 'high'"
@@ -153,7 +153,7 @@
 
                             <field name="progress_html" widget="html" readonly="1"/>
                         </group>
-                        <group string="Satisfaction">
+                        <group string="--">
                             <field name="job_satisfaction" readonly="1"/>
                             <field name="work_life_balance" readonly="1"/>
                         </group>
@@ -161,7 +161,7 @@
                             <field name="leadership_opportunities" readonly="1"/>
                             <field name="innovation_opportunities" readonly="1"/>
                         </group>
-                        <group string="">
+                        <group string="--">
                             <field name="company_reputation" readonly="1"/>
                             <field name="employee_recognition" readonly="1"/>
                         </group>
@@ -170,7 +170,7 @@
                         </group>
                     </group>
                 </page>
-                <page name="history" string="Evaluation History">
+                <page name="history" string="Historique des évaluations">
                     <field name="historic_detaill"
                            widget="one2many_list" readonly="1">
                         <tree>

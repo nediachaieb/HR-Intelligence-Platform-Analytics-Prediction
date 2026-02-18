@@ -24,6 +24,8 @@
     ],
     'assets': {
         'web.assets_backend': [
+            'risk_prediction/static/src/css/turnover_dashboard.css',
+            'risk_prediction/static/lib/chart.min.js',
             'risk_prediction/static/src/js/turnover_dashboard.js',
             'risk_prediction/static/src/xml/turnover_dashboard.xml',
             "risk_prediction/static/src/js/employee_profile_dashboard.js",

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
+from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from odoo import http
 from odoo.http import request
 
@@ -82,17 +85,6 @@ class TurnoverDrilldownController(http.Controller):
                 "job_title": emp.job_title or "",
                 "last_evaluation": last_eval.date if last_eval else None,
                 "predicted_risk": emp.predicted_risk,
-                # "risk_label": {
-                #     "low": "Risque faible",
-                #     "medium": "Risque moyen",
-                #     "high": "Risque élevé",
-                #     "undefined": "Non évalué"
-                # }.get(emp.predicted_risk),
-                # "status_label": (
-                #     "Non évalué"
-                #     if emp.predicted_risk == 'undefined'
-                #     else None
-                # )
             })
 
         total = Employee.search_count(domain)
@@ -102,4 +94,92 @@ class TurnoverDrilldownController(http.Controller):
             "total": total,
             "count": len(data),
             "employees": data
+        }
+
+
+class TurnoverDashboardChartsController(http.Controller):
+
+    @http.route("/hr/turnover/dashboard/charts", type="json", auth="user")
+    def dashboard_charts(self):
+        if not request.env.user.has_group("risk_prediction.group_rh_risk"):
+            return {"error": "Access denied"}
+
+        Employee = request.env["hr.employee"].sudo()
+        Evaluation = request.env["historique.evaluation"].sudo()
+
+        employees = Employee.search([])
+
+        # ================================
+        # 1️⃣ BAR CHART — Par département
+        # ================================
+
+        dept_risk = defaultdict(lambda: {
+            "high": 0,
+            "medium": 0,
+            "low": 0
+        })
+
+        for emp in employees:
+            dept = emp.department_id.name if emp.department_id else "Non défini"
+            risk = emp.predicted_risk or "undefined"
+
+            if risk in ["high", "medium", "low"]:
+                dept_risk[dept][risk] += 1
+
+        bar_data = {
+            "labels": list(dept_risk.keys()),
+            "high": [v["high"] for v in dept_risk.values()],
+            "medium": [v["medium"] for v in dept_risk.values()],
+            "low": [v["low"] for v in dept_risk.values()],
+        }
+
+        # ====================================
+        # 2️⃣ LINE CHART — Évolution temporelle
+        # ====================================
+
+        today = datetime.today()
+
+        months = []
+        high_values = []
+        medium_values = []
+        low_values = []
+
+        for i in range(12, -1, -1):
+            start_date = (today - relativedelta(months=i)).replace(day=1)
+            end_date = start_date + relativedelta(months=1)
+
+            months.append(start_date.strftime("%b %Y"))
+
+            high_count = Evaluation.search_count([
+                ("date", ">=", start_date),
+                ("date", "<", end_date),
+                ("pred_risk", "=", "high"),
+            ])
+
+            medium_count = Evaluation.search_count([
+                ("date", ">=", start_date),
+                ("date", "<", end_date),
+                ("pred_risk", "=", "medium"),
+            ])
+
+            low_count = Evaluation.search_count([
+                ("date", ">=", start_date),
+                ("date", "<", end_date),
+                ("pred_risk", "=", "low"),
+            ])
+
+            high_values.append(high_count)
+            medium_values.append(medium_count)
+            low_values.append(low_count)
+
+        line_data = {
+            "labels": months,
+            "high": high_values,
+            "medium": medium_values,
+            "low": low_values,
+        }
+
+        return {
+            "bar": bar_data,
+            "line": line_data,
         }

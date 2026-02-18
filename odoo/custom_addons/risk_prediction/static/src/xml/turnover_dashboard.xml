@@ -3,114 +3,139 @@
 
 <t t-name="risk_prediction.TurnoverDashboard">
 
-  <div class="o_turnover_dashboard">
+<div class="o_turnover_dashboard">
 
-    <!-- KPI globaux -->
-      <div class="o_kpi_container" t-if="state.stats">
-
-      <div class="o_kpi">
-        <strong>Total employés</strong>
-          <span t-esc="state.stats.total"/>
-      </div>
-
-          <div class="o_kpi">
-        <strong>Total évalués</strong>
-              <span t-esc="state.stats.evaluated"/>
-      </div>
-
-          <div class="o_kpi clickable"
-               t-on-click="() => this.openRisk('high')">
-        <strong>Risque élevé = </strong>
-              <span t-esc="state.stats.percent?.high || 0"/>
-              %
-      </div>
-
-          <div class="o_kpi clickable"
-               t-on-click="() => this.openRisk('medium')">
-        <strong>Risque moyen = </strong>
-              <span t-esc="state.stats.percent?.medium || 0"/>
-              %
-      </div>
-
-          <div class="o_kpi clickable"
-               t-on-click="() => this.openRisk('low')">
-        <strong>Risque faible = </strong>
-              <span t-esc="state.stats.percent?.low || 0"/>
-              %
-      </div>
-
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h2>Analyse prédictive des risques de départ</h2>
     </div>
 
-      <!-- Liste après clic -->
-      <div class="o_drilldown" t-if="state.selectedRisk">
+    <hr/>
 
-      <h4>
-        Employés —
-        <t t-if="state.selectedRisk === 'high'">Risque élevé</t>
-          <t t-if="state.selectedRisk === 'medium'">Risque moyen</t>
-          <t t-if="state.selectedRisk === 'low'">Risque faible</t>
-          <t t-if="state.selectedRisk === 'undefined'">Non évalué</t>
-      </h4>
+    <!-- KPI -->
+    <div class="row g-3 mb-4" t-if="state.stats">
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card">
+                <div class="kpi-label">Total employés</div>
+                <div class="kpi-number" t-esc="state.stats.total"/>
+            </div>
+        </div>
 
-          <t t-if="state.loading">
-        <span>Chargement…</span>
-      </t>
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card">
+                <div class="kpi-label">Total évalués</div>
+                <div class="kpi-number" t-esc="state.stats.evaluated"/>
+            </div>
+        </div>
+    </div>
 
-          <table t-if="!state.loading" class="table table-sm">
-        <thead>
-          <tr>
-            <th>ID</th>
-              <th>Nom</th>
-              <th>Département</th>
-              <th>Poste</th>
-              <th>Dernière évaluation</th>
-              <th>Actions</th>
-          </tr>
-        </thead>
+    <hr/>
 
-              <tbody>
+    <!-- GRAPHIQUES -->
+<div class="row g-4">
 
-          <!-- État vide -->
-                  <tr t-if="!state.loading and state.employees.length === 0">
-            <td colspan="6" class="text-center text-muted">
-              Aucun employé dans cette catégorie.
-            </td>
-          </tr>
+    <!-- Donut -->
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="chart-card h-100">
+            <h5>Répartition des risques</h5>
+            <div class="chart-container">
+                <canvas t-ref="donutChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-                  <!-- Lignes employés -->
-                  <tr t-foreach="state.employees" t-as="emp" t-key="emp.id">
-                      <td>
-                          <span class="text-muted">
-                            ID: <t t-esc="emp.id"/>
-                          </span>
-                      </td>
+    <!-- Line -->
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="chart-card h-100">
+            <h5>Évolution du risque</h5>
+            <div class="chart-container line-chart">
+                <canvas t-ref="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-                      <td t-esc="emp.name"/>
-                      <td t-esc="emp.department"/>
-                      <td t-esc="emp.job_title"/>
-                      <td t-esc="emp.last_evaluation || '-'"/>
+    <!-- Bar -->
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="chart-card h-100">
+            <h5>Répartition par département</h5>
+            <div class="chart-container">
+                <canvas t-ref="barChart"></canvas>
+            </div>
+        </div>
+    </div>
 
-                      <td>
-                            <button class="btn btn-sm btn-primary me-1"
-                                    t-att-disabled="state.loading"
-                                    t-on-click="() => this.openEmployee(emp.id)">
-                              Profil
-                            </button>
+</div>
 
-                          <button class="btn btn-sm btn-outline-secondary"
+    <!-- MODAL -->
+    <div t-if="state.showModal" class="o_custom_modal">
+        <div class="modal-overlay" t-on-click="closeModal"/>
+        <div class="modal-box">
+
+            <div class="modal-header">
+                <h5>
+                    Employés — <t t-esc="state.selectedRisk?.toUpperCase()"/>
+                </h5>
+                <button class="btn-close" t-on-click="closeModal"/>
+            </div>
+
+            <div class="modal-body">
+
+                <t t-if="state.loading">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary"/>
+                    </div>
+                </t>
+
+                <table t-if="!state.loading"
+                       class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Département</th>
+                            <th>Poste</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr t-foreach="state.employees"
+                            t-as="emp"
+                            t-key="emp.id">
+
+                            <td t-esc="emp.name"/>
+                            <td t-esc="emp.department"/>
+                            <td t-esc="emp.job_title"/>
+
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-primary"
+                                        t-on-click="() => this.openEmployee(emp.id)">
+                                    Profil
+                                </button>
+
+                                <button class="btn btn-sm btn-outline-secondary"
                                   t-att-disabled="state.loading"
                                   t-on-click="() => this.openHistory(emp.id)">
                 Historique Questionnaires
               </button>
-            </td>
 
-          </tr>
-        </tbody>
-      </table>
+                            </td>
+
+
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-sm btn-secondary ms-2"
+                                                        t-on-click="() => this.closeModal()">
+                                                    Fermer
+                                                </button>
+
+            </div>
+
+        </div>
 
     </div>
 
-  </div>
-
+</div>
 </t>
 </templates>

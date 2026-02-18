@@ -6,49 +6,49 @@ class HistoricEvaluation(models.Model):
     _description = 'Evaluation History'
 
     name = fields.Char(string="Référence")
-    date = fields.Datetime(string="Response Date", readonly=True)
+    date = fields.Datetime(string="Date", readonly=True)
     job_satis = fields.Selection(
         [
-            ('low', 'Low'),
-            ('medium', 'Medium'),
-            ('high', 'High'),
-            ('very_high', 'Very High'),
+            ('low', 'Faible'),
+            ('medium', 'Moyen'),
+            ('high', 'Élevé'),
+            ('very_high', 'Très Élevé'),
         ],
-        string="Job Satisfaction",
+        string="Satisfaction au travail",
         store=True,
     )
     work_life = fields.Selection(
         [
-            ('poor', 'Poor'), ('fair', 'Fair'), ('good', 'Good'), ('excellent', 'Excellent')
+            ('poor', 'Mauvais'), ('fair', 'Passable'), ('good', 'Bon'), ('excellent', 'Excellent')
         ],
-        string="Work-Life Balance"
+        string="Équilibre vie pro / perso"
     )
     performance = fields.Selection(
-        [('low', 'Low'), ('below_average', 'Below Average'),
-         ('average', 'Average'), ('high', 'High')],
-        string="Performance Rating"
+        [('low', 'Faible'), ('below_average', 'Sous la Moyenne'),
+         ('average', 'Moyenne'), ('high', 'Élevé')],
+        string="Évaluation de performance"
     )
     leadership_opport = fields.Selection(
-        [('yes', 'Yes'), ('no', 'No')],
-        string="Leadership Opportunities"
+        [('yes', 'Oui'), ('no', 'Non')],
+        string="Opportunités de leadership"
     )
     innovation_opport = fields.Selection(
-        [('yes', 'Yes'), ('no', 'No')],
-        string="Innovation Opportunities"
+        [('yes', 'Oui'), ('no', 'Non')],
+        string="Opportunités d'innovation"
     )
     company_reput = fields.Selection(
-        [('poor', 'Poor'), ('fair', 'Fair'), ('good', 'Good'), ('excellent', 'Excellent')],
-        string="Company Reputation"
+        [('poor', 'Mauvaise'), ('fair', 'Correcte'), ('good', 'Bonne'), ('excellent', 'Excellente')],
+        string="Réputation de l'entreprise"
     )
     employee_recog = fields.Selection(
-        [('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('very_high', 'Very High')],
-        string="Employee Recognition"
+        [('low', 'Faible'), ('medium', 'Moyen'), ('high', 'Élevé'), ('very_high', 'Très Élevé')],
+        string="Reconnaissance employé"
     )
 
     #  Risque prédit via FastAPI
     pred_risk = fields.Selection(
-        [('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('undefined', 'Undefined')],
-        string="Predicted Risk", readonly=True
+        [('low', 'Faible'), ('medium', 'Moyen'), ('high', 'Élevé'), ('undefined', 'Non défini')],
+        string="Risque prédit", readonly=True
     )
     employee_id = fields.Many2one('hr.employee', string="Employee")
 

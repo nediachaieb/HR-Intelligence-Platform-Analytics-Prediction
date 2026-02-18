@@ -13,7 +13,7 @@
 
 
     <menuitem id="menu_turnover_dashboard"
-              name="Dashboard Turnover"
+              name="Tableau de bord du turnover"
               parent="hr.menu_hr_employee_payroll"
               action="action_turnover_dashboard"
               groups="risk_prediction.group_rh_risk"/>
